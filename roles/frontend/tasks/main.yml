@@ -1,0 +1,34 @@
+# we are writing some playbooks for automating
+
+- name: installing nginx
+  ansible.builtin.yum:
+    name: nginx
+    state: installed
+
+- name: Remove Old HTML Content
+  ansible.builtin.file:
+    path: /usr/share/nginx/html
+    state: absent
+
+- name: Download the frontend context and Unarchive/extract it
+  ansible.builtin.unarchive:
+    src: https://github.com/roboshop-devops-project/frontend/archive/main.zip
+    dest: /tmp/
+    remote_src: yes
+
+- name: copy frontend context
+  ansible.builtin.copy:
+    src: /tmp/frontend-main/static/
+    dest: /usr/share/nginx/html
+    remote_src: yes
+
+- name: copy roboshop config file
+  ansible.builtin.copy:
+    src: roboshop.conf
+    dest: /etc/nginx/default.d/roboshop.conf
+    remote_src: yes
+
+- name: Start service nginx
+  ansible.builtin.service:
+    name: nginx
+    state: started
