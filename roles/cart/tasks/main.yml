@@ -1,0 +1,26 @@
+# we are automating the CART service using ansible
+
+- name: setup nodeJS repos
+  ansible.builtin.shell: curl -sL https://rpm.nodesource.com/setup_lts.x | bash
+
+- name: installing nodejs
+  ansible.builtin.yum:
+    name : nodejs
+    state: installed
+
+- name: adding user
+  ansible.builtin.user:
+    name: roboshop
+    comment: RoboShop Application User
+
+- name: download the USER content and extract it
+  ansible.builtin.unarchive:
+    src: https://github.com/roboshop-devops-project/cart/archive/main.zip
+    dest: /tmp/
+    remote_src: yes
+
+- name: copy roboshop config file
+  ansible.builtin.copy:
+    src: roboshop.conf
+    dest: /etc/nginx/default.d/roboshop.conf
+    remote_src: yes
